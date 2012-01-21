@@ -3,19 +3,52 @@
  * class Pot contains both methods start and stop cooking
  */
 final class Pot{
+    /**
+     * Instance of this class
+     *
+     * var $_instance
+     */
+    private static $_instance;
     /*
-     * password for start cooking or stop cooking
+     * good password for start cooking
      *
      * var string
      */
-    private $password;
+    const START_PASSWORD = 'Cook, little pot, cook!';
     /*
-     * construct
+     * good password for stop cooking
      *
-     * @param string $password
+     * var string
      */
-    public function __construct($password){
-        $this->password = $password;
+    const STOP_PASSWORD = 'Stop, little pot!';
+    /*
+     * received password for start cooking
+     *
+     * var string
+     */
+    private $startPassword;
+    /*
+     * received password for stop cooking
+     *
+     * var string
+     */
+    private $stopPassword;
+
+    private function __construct(){
+    }
+    /**
+     * Get an instance of this class
+     *
+     * @return Pot
+     */
+    public static function getInstance($startPassword, $stopPassword){
+        if(!isset(self::$_instance) || is_null(self::$_instance)){
+            self::$_instance = new Pot();
+            self::$_instance->startPassword = $startPassword;
+            self::$_instance->stopPassword = $stopPassword;
+        }
+
+        return self::$_instance;
     }
     /*
      * method that cooks something if the password exist
@@ -23,7 +56,7 @@ final class Pot{
      * @return bool
      */
     public function startCooking(){
-        if($this->password == 'Cook, little pot, cook'){
+        if($this->password == self::START_PASSWORD){
             // cook something
             return true;
         }
@@ -37,13 +70,16 @@ final class Pot{
      * @return bool
      */
     public function stopCooking(){
-        if($this->password == 'Stop, little pot'){
+        if($this->password == self::STOP_PASSWORD){
             // stop cooking
             return true;
         }
         else{
             return false;
         }
+    }
+    public final function __clone() {
+        throw new Exception ( "Cloning a Singleton is not allowed!" );
     }
 }
 /*
@@ -59,8 +95,8 @@ abstract class AgedWoman{
      *
      * @param string
      */
-    public function __construct($password){
-        $this->pot = new Pot($password);
+    public function __construct($startPassword, $stopPassword){
+        $this->pot = Pot::getInstance($startPassword, $stopPassword);
     }
     /*
      *  start cooking or not, depends on the password
@@ -74,16 +110,38 @@ abstract class AgedWoman{
     protected function potStopCooking(){
         $this->pot->stopCooking();
     }
+    // show actions: start and stop cooking
+    abstract function show();
 }
 
 /*
  * class Daughter has both methods because has the password
  */
 class Daughter extends AgedWoman{
+    /*
+     *  show actions : start and stop
+     */
+    public function show(){
+        $this->potStartCooking();
+        $this->potStopCooking();
+    }
 }
 /*
  * class Mother should knows only the
  */
 class Mother extends Daughter{
+    /*
+     *  show actions : start and stop
+     */
+    public function show(){
+        $this->potStartCooking();
+        $this->potStopCooking();
+    }
 }
+
+$startPassword = 'Cook, little pot, cook!';
+$stopPassword = 'Stop, little pot!';
+$stopPasswordInvalid = 'Just stop at once!';
+$daughter = new Daughter($startPassword,$stopPassword);
+$mother = new Mother($startPassword, $stopPasswordInvalid);
 
