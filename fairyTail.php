@@ -158,7 +158,7 @@ abstract class AgedWoman{
             {
                 echo "Please stop! You allready fed " . $i . " houses<br />";
             }
-            if($i == $this->maxHouses - 1)
+            if($i == $this->maxHouses - 2)
             {
                 echo "Just one more house left. You have to eat you way back..<br />";
                 $this->eatTheWayBack();
