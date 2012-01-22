@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('display_errors',1);
 /*
  * Class Pot contains both methods start and stop cooking
  */
@@ -28,6 +28,10 @@ final class Pot{
      * var string
      */
     private $stopPassword;
+    /*
+     * flag which keeps the first call
+     */
+    private $flag = false;
 
     /**
      * Construct of this class
@@ -38,18 +42,20 @@ final class Pot{
     public function __construct($startPassword, $stopPassword){
         $this->startPassword = $startPassword;
         $this->stopPassword = $stopPassword;
+        $this->flag = true;
     }
     /*
      * Method that cooks something if the password exist
      *
      */
     public function startCooking(){
-        if($this->startPassword == self::START_PASSWORD){
-            echo "Pot start cooking! ";
+        if($this->startPassword == self::START_PASSWORD && $this->flag){
+            echo "Pot start cooking!<br />";
+            $this->flag = false;
             return true;
         }
-        else{
-            echo "Pot can't start cooking! ";
+        elseif($this->startPassword != self::START_PASSWORD){
+            echo "Pot won't start cooking!<br />";
             return false;
         }
     }
@@ -57,12 +63,13 @@ final class Pot{
      * Method that stop cooking if the password exist
      */
     public function stopCooking(){
-        if($this->stopPassword == self::STOP_PASSWORD){
-            echo "Pot stop cooking! ";
+        if($this->stopPassword == self::STOP_PASSWORD && !$this->flag){
+            echo "Pot stop cooking!<br />";
+            $this->flag = false;
             return true;
         }
-        else{
-            echo "Pot can't stop cooking! ";
+        elseif($this->stopPassword != self::STOP_PASSWORD){
+            echo "Pot won't stop cooking!<br />";
             return false;
         }
     }
@@ -71,6 +78,10 @@ final class Pot{
  * class AgedWoman
  */
 abstract class AgedWoman{
+    /*
+    * Counting houses to feed
+    */
+    const COUNT_HOUSES = 100;
     /*
     * Home to feed
     *
@@ -92,14 +103,26 @@ abstract class AgedWoman{
         $this->pot = new Pot($startPassword, $stopPassword);
     }
     /*
-     * Feed one Home
+     * feed some houses
      */
     protected function feedHome(){
-        if( $this->pot->startCooking()){
-            $this->home[] = 'Feed home! ';
-        }
-        if( $this->pot->stopCooking()){
-            $this->home[] = 'Home fed! ';
+        for($i = 1; $i <= self::COUNT_HOUSES; $i++){
+            if( $this->pot->startCooking()){
+                $this->home[$i] = 'Feed home! <br />';
+            }
+            if( $this->pot->stopCooking()){
+                $this->home[$i] = 'Home ' . $i . ' fed! <br />';
+                break;
+            }
+            if($i == self::COUNT_HOUSES/2)
+            {
+                echo "Please stop! You allready fed " . $i . " houses<br />";
+            }
+            if($i == self::COUNT_HOUSES)
+            {
+                echo "You fed " . $i . "  houses. Now you have to eat you way back..<br />";
+                break;
+            }
         }
         echo implode(' ', $this->home);
     }
@@ -145,7 +168,7 @@ class Mother extends Daughter{
 $startPassword = 'Cook, little pot, cook!';
 $stopPassword = 'Stop, little pot!';
 $stopPasswordInvalid = 'Just stop at once!';
-$daughter = new Daughter(1,$stopPassword);
+$daughter = new Daughter($startPassword,$stopPassword);
 $mother = new Mother($startPassword, $stopPasswordInvalid);
 
 $daughter->show();
