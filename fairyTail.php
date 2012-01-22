@@ -1,85 +1,70 @@
 <?php
+ini_set('display_errors', 1);
 /*
- * class Pot contains both methods start and stop cooking
+ * Class Pot contains both methods start and stop cooking
  */
 final class Pot{
-    /**
-     * Instance of this class
-     *
-     * var $_instance
-     */
-    private static $_instance;
     /*
-     * good password for start cooking
+     * Good password for start cooking
      *
      * var string
      */
     const START_PASSWORD = 'Cook, little pot, cook!';
     /*
-     * good password for stop cooking
+     * Good password for stop cooking
      *
      * var string
      */
     const STOP_PASSWORD = 'Stop, little pot!';
     /*
-     * received password for start cooking
+     * Received password for start cooking
      *
      * var string
      */
     private $startPassword;
     /*
-     * received password for stop cooking
+     * Received password for stop cooking
      *
      * var string
      */
     private $stopPassword;
 
-    private function __construct(){
-    }
     /**
-     * Get an instance of this class
+     * Construct of this class
      *
-     * @return Pot
+     * @param string $startPassword
+     * @param string $stopPassword
      */
-    public static function getInstance($startPassword, $stopPassword){
-        if(!isset(self::$_instance) || is_null(self::$_instance)){
-            self::$_instance = new Pot();
-            self::$_instance->startPassword = $startPassword;
-            self::$_instance->stopPassword = $stopPassword;
-        }
-
-        return self::$_instance;
+    public function __construct($startPassword, $stopPassword){
+        $this->startPassword = $startPassword;
+        $this->stopPassword = $stopPassword;
     }
     /*
-     * method that cooks something if the password exist
+     * Method that cooks something if the password exist
      *
-     * @return bool
      */
     public function startCooking(){
-        if($this->password == self::START_PASSWORD){
-            // cook something
+        if($this->startPassword == self::START_PASSWORD){
+            echo "Pot start cooking! ";
             return true;
         }
         else{
+            echo "Pot can't start cooking! ";
             return false;
         }
     }
     /*
-     * method that stop cooking if the password exist
-     *
-     * @return bool
+     * Method that stop cooking if the password exist
      */
     public function stopCooking(){
-        if($this->password == self::STOP_PASSWORD){
-            // stop cooking
+        if($this->stopPassword == self::STOP_PASSWORD){
+            echo "Pot stop cooking! ";
             return true;
         }
         else{
+            echo "Pot can't stop cooking! ";
             return false;
         }
-    }
-    public final function __clone() {
-        throw new Exception ( "Cloning a Singleton is not allowed!" );
     }
 }
 /*
@@ -87,61 +72,81 @@ final class Pot{
  */
 abstract class AgedWoman{
     /*
+    * Home to feed
+    *
+    * var array
+    */
+    private $home = array();
+    /*
      * Pot class object
+     * 
+     * var object
      */
     private $pot;
     /*
-     * construct
+     * Construct of the class
      *
      * @param string
      */
     public function __construct($startPassword, $stopPassword){
-        $this->pot = Pot::getInstance($startPassword, $stopPassword);
+        $this->pot = new Pot($startPassword, $stopPassword);
     }
     /*
-     *  start cooking or not, depends on the password
+     * Feed one Home
+     */
+    protected function feedHome(){
+        if( $this->pot->startCooking()){
+            $this->home[] = 'Feed home! ';
+        }
+        if( $this->pot->stopCooking()){
+            $this->home[] = 'Home fed! ';
+        }
+        echo implode(' ', $this->home);
+    }
+    /*
+     *  Start cooking or not, depends on the password
      */
     protected function potStartCooking(){
         $this->pot->startCooking();
     }
     /*
-     *  stop cooking or not, depends on the password
+     *  Stop cooking or not, depends on the password
      */
     protected function potStopCooking(){
         $this->pot->stopCooking();
     }
-    // show actions: start and stop cooking
+
+    // Show actions: start and stop cooking
     abstract function show();
 }
-
 /*
  * class Daughter has both methods because has the password
  */
 class Daughter extends AgedWoman{
     /*
-     *  show actions : start and stop
+     *  Show actions : start and stop
      */
     public function show(){
-        $this->potStartCooking();
-        $this->potStopCooking();
+        $this->feedHome();
     }
 }
 /*
- * class Mother should knows only the
+ * Class Mother should knows only the
  */
 class Mother extends Daughter{
     /*
-     *  show actions : start and stop
+     *  Show actions : start and stop
      */
     public function show(){
-        $this->potStartCooking();
-        $this->potStopCooking();
+        $this->feedHome();
     }
 }
 
 $startPassword = 'Cook, little pot, cook!';
 $stopPassword = 'Stop, little pot!';
 $stopPasswordInvalid = 'Just stop at once!';
-$daughter = new Daughter($startPassword,$stopPassword);
+$daughter = new Daughter(1,$stopPassword);
 $mother = new Mother($startPassword, $stopPasswordInvalid);
 
+$daughter->show();
+$mother->show();
