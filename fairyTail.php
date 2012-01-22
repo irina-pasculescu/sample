@@ -114,7 +114,7 @@ abstract class AgedWoman{
     *
     * var array
     */
-    private $home = '';
+    private $home = array();
     /*
      * Pot class object
      * 
@@ -132,7 +132,7 @@ abstract class AgedWoman{
     /*
      * Sets the number of houses that will feed and shouldn't pass
      */
-    public function setMaxHouses($maxHouses){
+    public function setMaxHousesOfTown($maxHouses){
         $this->maxHouses = $maxHouses;
     }
     /*
@@ -145,28 +145,28 @@ abstract class AgedWoman{
      * Feed some houses
      */
     protected function feedHome(){
-        for($i = 1; $i <= $this->maxHouses; $i++){
+        for($i = 0; $i < $this->maxHouses; $i++){
             if($this->pot->startCooking()){
-                $this->home .= 'Feed home! <br />';
+                $this->home[] = 'Feed home! <br />';
             }
             if($this->pot->stopCooking()){
-                $this->home .= 'Home ' . $i . ' fed! <br />';
+                $this->home[] = 'Home ' . $i . ' fed! <br />';
 
                 break;
             }
-            if($i == $this->maxHouses/2)
+            if($i == $this->maxHouses / 2)
             {
                 echo "Please stop! You allready fed " . $i . " houses<br />";
             }
-            if($i == $this->maxHouses)
+            if($i == $this->maxHouses - 1)
             {
-                echo "You fed " . $i . "  houses. Now you have to eat you way back..<br />";
+                echo "Just one more house left. You have to eat you way back..<br />";
                 $this->eatTheWayBack();
 
                 break;
             }
         }
-        echo $this->home;
+        echo implode(' ', $this->home);
     }
     /*
      * Eat the way back to $maxHouses houses till you get home
@@ -174,7 +174,7 @@ abstract class AgedWoman{
     private function eatTheWayBack(){
         $houses = $this->maxHouses;
         while($houses > 0){
-            echo "Eat may way back to house " . $houses . "<br />";
+            echo "Eat your way back to house " . $houses . "<br />";
             if($houses == $this->sweetHome){
                 echo "Finally got home! No more eating!<br />";
 
@@ -228,11 +228,11 @@ $stopPasswordInvalid = 'Just stop at once!';
 
 $daughter = new Daughter($startPassword, $stopPassword);
 $daughter->setSweetHome(5);
-$daughter->setMaxHouses(1);
+$daughter->setMaxHousesOfTown(1);
 
 $mother = new Mother($startPassword, $stopPasswordInvalid);
-$mother->setMaxHouses(50);
-$mother->setSweetHome(5);
+$mother->setMaxHousesOfTown(1);
+$mother->setSweetHome(1);
 
 $daughter->show();
 $mother->show();
